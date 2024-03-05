@@ -8,26 +8,25 @@ export default function FeedbackList() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const fetchFeedbacks = async () => {
     setIsLoading(true);
-    fetch(
-      "https://bytegrad.com/course-assets/projects/corpcomment/api/feedddbacks"
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch feedbacks");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setFeedbackItems(data.feedbacks);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        //network error, parse error, or response is not ok
-        setError("Something went wrong.");
-        setIsLoading(false);
-      });
+    try {
+      const response = await fetch(
+        "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch feedbacks");
+      }
+      const data = await response.json();
+      setFeedbackItems(data.feedbacks);
+    } catch {
+      setError("Something went wrong.");
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchFeedbacks();
   }, []);
 
   return (
