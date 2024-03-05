@@ -1,11 +1,3 @@
-import FeedbackList from "./FeedbackList";
-import Header from "./Header";
-
-export default function Container() {
-  return (
-    <main className="main">
-      <Header />
-      <FeedbackList />
-    </main>
-  );
+export default function Container({ children }) {
+  return <main className="main">{children}</main>;
 }
