@@ -1,4 +1,16 @@
-export default function FeedbackItem({ feedbackItem }) {
+type FeedbackItem = {
+  upvoteCount: number;
+  badgeLetter: string;
+  companyName: string;
+  feedback: string;
+  daysAgo: number;
+};
+
+type FeedbackItemProps = {
+  feedbackItem: FeedbackItem;
+};
+
+export default function FeedbackItem({ feedbackItem }: FeedbackItemProps) {
   return (
     <li className="feedback">
       <button>
