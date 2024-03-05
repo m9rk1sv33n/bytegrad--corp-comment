@@ -13,7 +13,13 @@ export default function FeedbackForm() {
         placeholder="Enter feedback here"
         spellCheck={false}
         value={feedback}
-        onChange={(event) => setFeedback(event.target.value)}
+        onChange={(event) => {
+          const newFeedback = event.target.value;
+          if (newFeedback.length > MAX_CHARACTERS) {
+            return;
+          }
+          setFeedback(newFeedback);
+        }}
         // maxLength={MAX_CHARACTERS}
       />
       <label htmlFor="feedback-textarea">
