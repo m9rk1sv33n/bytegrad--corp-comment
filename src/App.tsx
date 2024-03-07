@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Container from "./components/Container";
 import Footer from "./components/Footer";
 import HashtagList from "./components/HashtagList";
@@ -14,8 +14,25 @@ export default function App() {
   const [feedbackItems, setFeedbackItems] = useState<TFeedbackItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
 
-  const handleAddToFeedbackList = (text: string) => {
+  const filteredFeedbackItems = useMemo(
+    () =>
+      selectedCompany
+        ? feedbackItems.filter((item) => item.company === selectedCompany)
+        : feedbackItems,
+    [selectedCompany, feedbackItems]
+  );
+
+  const companyList = useMemo(
+    () =>
+      feedbackItems
+        .map((item) => item.company)
+        .filter((company, index, array) => array.indexOf(company) === index),
+    [feedbackItems]
+  );
+
+  const handleAddToFeedbackList = async (text: string) => {
     const companyName = text
       .split(" ")
       .find((word) => word.startsWith("#"))!
@@ -25,12 +42,28 @@ export default function App() {
       id: new Date().getTime(),
       upvoteCount: 0,
       badgeLetter: companyName.charAt(0).toUpperCase(),
-      companyName: companyName,
+      company: companyName,
       text: text,
       daysAgo: 0,
     };
 
     setFeedbackItems([...feedbackItems, newFeedback]);
+
+    await fetch(
+      "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newFeedback),
+      }
+    );
+  };
+
+  const handleSelectCompany = (company: string) => {
+    setSelectedCompany(company);
   };
 
   const fetchFeedbacks = async () => {
@@ -65,12 +98,15 @@ export default function App() {
           <FeedbackForm onAddToFeedbackList={handleAddToFeedbackList} />
         </Header>
         <FeedbackList
-          feedbackItems={feedbackItems}
+          feedbackItems={filteredFeedbackItems}
           isLoading={isLoading}
           error={error}
         />
       </Container>
-      <HashtagList />
+      <HashtagList
+        handleSelectCompany={handleSelectCompany}
+        companyList={companyList}
+      />
     </div>
   );
 }

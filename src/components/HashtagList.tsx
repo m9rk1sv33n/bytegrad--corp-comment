@@ -1,15 +1,23 @@
-export default function HashtagList() {
+import HashtagItem from "./HashtagItem";
+
+type HashtagListProps = {
+  companyList: string[];
+  handleSelectCompany: (company: string) => void;
+};
+
+export default function HashtagList({
+  companyList,
+  handleSelectCompany,
+}: HashtagListProps) {
   return (
     <ul className="hashtags">
-      <li>
-        <button>#Netflix</button>
-      </li>
-      <li>
-        <button>#Nike</button>
-      </li>
-      <li>
-        <button>#MacDonalds</button>
-      </li>
+      {companyList.map((company) => (
+        <HashtagItem
+          company={company}
+          key={company}
+          onSelectCompany={handleSelectCompany}
+        />
+      ))}
     </ul>
   );
 }

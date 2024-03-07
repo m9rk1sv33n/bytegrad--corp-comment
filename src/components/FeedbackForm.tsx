@@ -9,6 +9,8 @@ export default function FeedbackForm({
   onAddToFeedbackList,
 }: FeedbackFormProps) {
   const [feedback, setFeedback] = useState("");
+  const [showValid, setShowValid] = useState(false);
+  const [showInvalid, setShowInvalid] = useState(false);
 
   const charCount = MAX_CHARACTERS - feedback.length;
 
@@ -22,12 +24,28 @@ export default function FeedbackForm({
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    //basic validation
+    if (feedback.includes("#") && feedback.length >= 5) {
+      setShowValid(true);
+      setTimeout(() => setShowValid(false), 3000);
+    } else {
+      setShowInvalid(true);
+      setTimeout(() => setShowInvalid(false), 3000);
+      return;
+    }
+
     onAddToFeedbackList(feedback);
     setFeedback("");
   };
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
+    <form
+      className={`form ${showValid ? "form--valid" : ""} ${
+        showInvalid ? "form--invalid" : ""
+      } `}
+      onSubmit={handleSubmit}
+    >
       <textarea
         id="feedback-textarea"
         placeholder="Enter feedback here"
